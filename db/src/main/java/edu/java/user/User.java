@@ -1,5 +1,7 @@
 package edu.java.user;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +26,8 @@ public class User {
     public User(long userId, State state, String[] trackList) {
         this.userId = userId;
         this.state = state;
-        this.trackList = Set.of(trackList);
+        this.trackList = new HashSet<>();
+        this.trackList.addAll(List.of(trackList));
     }
 
     public boolean track(String link) {
@@ -33,5 +36,9 @@ public class User {
 
     public boolean untrack(String link) {
         return this.trackList.remove(link);
+    }
+
+    public String[] getLinks() {
+        return this.trackList.toArray(String[]::new);
     }
 }
