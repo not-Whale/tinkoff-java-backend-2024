@@ -47,7 +47,6 @@
 
     <modules>
         <module>bot</module>
-        <module>db</module>
         <module>scrapper</module>
     </modules>
 

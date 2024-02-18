@@ -1,11 +1,11 @@
-package edu.java.user;
+package edu.java.bot.db.user;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import static edu.java.user.State.NEW_USER;
+import static edu.java.bot.db.user.State.NEW_USER;
 
 @Getter
 public class User {

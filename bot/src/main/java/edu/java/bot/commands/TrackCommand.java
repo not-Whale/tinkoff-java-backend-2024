@@ -2,8 +2,8 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.Database;
-import edu.java.user.State;
+import edu.java.bot.db.Database;
+import edu.java.bot.db.user.State;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Setter;

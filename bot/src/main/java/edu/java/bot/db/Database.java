@@ -1,7 +1,7 @@
-package edu;
+package edu.java.bot.db;
 
-import edu.java.user.State;
-import edu.java.user.User;
+import edu.java.bot.db.user.State;
+import edu.java.bot.db.user.User;
 import java.util.HashMap;
 import java.util.Map;
 
