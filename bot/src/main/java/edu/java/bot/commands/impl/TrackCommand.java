@@ -1,0 +1,33 @@
+package edu.java.bot.commands.impl;
+
+import edu.java.bot.commands.Command;
+import edu.java.bot.commands.CommandType;
+import edu.java.bot.markdown_processor.MarkdownProcessor;
+
+// TODO: разобраться с константными полями
+// TODO: сделать бином
+public class TrackCommand implements Command {
+    private static final String COMMAND = "/track";
+
+    private static final String DESCRIPTION = "Добавить ресурс в список отслеживаемых.";
+
+    @Override
+    public String command() {
+        return COMMAND;
+    }
+
+    @Override
+    public String description() {
+        return DESCRIPTION;
+    }
+
+    @Override
+    public String usage() {
+        return MarkdownProcessor.codeBlock(command() + " <link1 link2...>");
+    }
+
+    @Override
+    public CommandType type() {
+        return CommandType.TRACK;
+    }
+}

@@ -2,20 +2,21 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.db.Database;
+import edu.java.bot.markdown_processor.MarkdownProcessor;
 
 public interface Command {
     String command();
 
     String description();
 
-    SendMessage handle(Update update);
+    CommandType type();
 
-    void setDatabase(Database database);
+    default String usage() {
+        return MarkdownProcessor.codeBlock(command());
+    }
 
-    default boolean validate(Update update) {
-        return update.message().text().startsWith(command());
+    default boolean isUpdateContainsCommand(Update update) {
+        return update.message().text().equals(command());
     }
 
     default BotCommand toApiCommand() {
