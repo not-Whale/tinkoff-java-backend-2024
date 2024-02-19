@@ -5,10 +5,10 @@ import edu.java.bot.db.user.User;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Database {
+public class UserRepository {
     private final Map<Long, User> users;
 
-    public Database() {
+    public UserRepository() {
         this.users = new HashMap<>();
     }
 
