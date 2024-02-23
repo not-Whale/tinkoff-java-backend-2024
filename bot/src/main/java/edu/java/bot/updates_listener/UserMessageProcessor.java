@@ -28,10 +28,10 @@ public class UserMessageProcessor {
         "Для получения инструкции по использованию бота используйте команду /help.";
 
     private static final String REGISTRATION_MESSAGE =
-        "Вы уже зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
+        "Вы успешно зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
 
     private static final String ALREADY_REGISTERED_MESSAGE =
-        "Вы успешно зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
+        "Вы уже зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
 
     private static final String AVAILABLE_COMMANDS_MESSAGE =
         "Список доступных команд:";
