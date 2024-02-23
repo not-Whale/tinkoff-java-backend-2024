@@ -23,10 +23,49 @@ public class UserMessageProcessor {
 
     private static final String DOUBLE_NEW_LINE = "\n\n";
 
-    private static final String USE_HELP_COMMAND_TEXT =
+    private static final String USE_HELP_COMMAND_MESSAGE =
         "Для получения инструкции по использованию бота используйте команду /help.";
 
-    private static final String UNVALIDATED_LINKS_TEXT =
+    private static final String REGISTRATION_MESSAGE =
+        "Вы уже зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
+
+    private static final String ALREADY_REGISTERED_MESSAGE =
+        "Вы успешно зарегистрированы. " + USE_HELP_COMMAND_MESSAGE;
+
+    private static final String AVAILABLE_COMMANDS_MESSAGE =
+        "Список доступных команд:";
+
+    private static final String NO_TRACK_LINKS_MESSAGE =
+        "Не было передано ссылок для отслеживания. " + USE_HELP_COMMAND_MESSAGE;
+
+    private static final String NO_UNTRACK_LINKS_MESSAGE =
+        "Не было передано ссылок для удаления. " + USE_HELP_COMMAND_MESSAGE;
+
+    private static final String TRACK_LIST_EMPTY_MESSAGE =
+        "Список отслеживаемых ресурсов пуст.";
+
+    private static final String UNKNOWN_COMMAND_MESSAGE =
+        "Неизвестная команда. " + USE_HELP_COMMAND_MESSAGE;
+
+    private static final String MUST_USE_START_COMMAND_MESSAGE =
+        "Для того, чтобы использовать бота, Вам необходимо зарегистрироваться с помощью команды /start.";
+
+    private static final String TRACK_LIST_HEADER =
+        "Список отслеживаемых ресурсов:";
+
+    private static final String TRACKED_LINKS_HEADER =
+        "Ресурсы, которые были добавлены в список отслеживаемых:";
+
+    private static final String ALREADY_TRACKED_LINKS_HEADER =
+        "Ресурсы, которые уже находятся в списке отслеживаемых:";
+
+    private static final String UNTRACKED_LINKS_HEADER =
+        "Ресурсы, которые были удалены из списка отслеживаемых:";
+
+    private static final String ALREADY_UNTRACKED_LINKS_HEADER =
+        "Ресурсы, которых нет в списке отслеживаемых:";
+
+    private static final String UNVALIDATED_LINKS_HEADER =
         "Ресурсы, ссылки на которые не были распознаны:";
 
     private final UserRepository userRepository;
@@ -62,16 +101,16 @@ public class UserMessageProcessor {
         User user = update.message().from();
         userRepository.createUser(user.id());
         if (userRepository.getUserState(user.id()).equals(State.DEFAULT)) {
-            return new SendMessage(user.id(), "Вы уже зарегистрированы. " + USE_HELP_COMMAND_TEXT);
+            return new SendMessage(user.id(), ALREADY_REGISTERED_MESSAGE);
         }
         userRepository.setUserState(user.id(), State.DEFAULT);
-        return new SendMessage(user.id(), "Вы успешно зарегистрированы. " + USE_HELP_COMMAND_TEXT);
+        return new SendMessage(user.id(), REGISTRATION_MESSAGE);
     }
 
     private SendMessage processHelpCommand(Update update) {
         User user = update.message().from();
         StringBuilder botCommandsMessageText = new StringBuilder(
-            MarkdownProcessor.bold("Список доступных команд:")
+            MarkdownProcessor.bold(AVAILABLE_COMMANDS_MESSAGE)
         ).append(DOUBLE_NEW_LINE);
         for (Command command : commands) {
             botCommandsMessageText
@@ -96,7 +135,7 @@ public class UserMessageProcessor {
         if (arguments.length == 0) {
             return new SendMessage(
                 user.id(),
-                "Не было передано ссылок для отслеживания. " + USE_HELP_COMMAND_TEXT
+                NO_TRACK_LINKS_MESSAGE
             );
         }
         List<String> validatedLinks = getValidatedLinks(arguments);
@@ -111,9 +150,9 @@ public class UserMessageProcessor {
         }
         List<String> unvalidatedLinks = getUnvalidatedLinks(arguments);
         String response = getLinksGroupMessageText(new HashMap<>() {{
-            put(MarkdownProcessor.bold("Ресурсы, которые были добавлены в список отслеживаемых:"), trackedLinks);
-            put(MarkdownProcessor.bold("Ресурсы, которые уже находятся в списке отслеживаемых:"), alreadyTrackedLinks);
-            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_TEXT), unvalidatedLinks);
+            put(MarkdownProcessor.bold(TRACKED_LINKS_HEADER), trackedLinks);
+            put(MarkdownProcessor.bold(ALREADY_TRACKED_LINKS_HEADER), alreadyTrackedLinks);
+            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_HEADER), unvalidatedLinks);
         }});
         return new SendMessage(
             user.id(),
@@ -129,7 +168,7 @@ public class UserMessageProcessor {
         if (arguments.length == 0) {
             return new SendMessage(
                 user.id(),
-                "Не было передано ссылок для удаления. " + USE_HELP_COMMAND_TEXT
+                NO_UNTRACK_LINKS_MESSAGE
             );
         }
         List<String> validatedLinks = getValidatedLinks(arguments);
@@ -144,9 +183,9 @@ public class UserMessageProcessor {
         }
         List<String> unvalidatedLinks = getUnvalidatedLinks(arguments);
         String response = getLinksGroupMessageText(new HashMap<>() {{
-            put(MarkdownProcessor.bold("Ресурсы, которые были удалены из списка отслеживаемых:"), untrackedLinks);
-            put(MarkdownProcessor.bold("Ресурсы, которых нет в списке отслеживаемых:"), alreadyUntrackedLinks);
-            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_TEXT), unvalidatedLinks);
+            put(MarkdownProcessor.bold(UNTRACKED_LINKS_HEADER), untrackedLinks);
+            put(MarkdownProcessor.bold(ALREADY_UNTRACKED_LINKS_HEADER), alreadyUntrackedLinks);
+            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_HEADER), unvalidatedLinks);
         }});
         return new SendMessage(
             user.id(),
@@ -212,11 +251,11 @@ public class UserMessageProcessor {
         if (userLinks.length == 0) {
             return new SendMessage(
                 user.id(),
-                "Список отслеживаемых ресурсов пуст."
+                TRACK_LIST_EMPTY_MESSAGE
             );
         }
         String response = getLinksGroupMessageText(new HashMap<>() {{
-            put(MarkdownProcessor.bold("Список отслеживаемых ресурсов:"), List.of(userLinks));
+            put(MarkdownProcessor.bold(TRACK_LIST_HEADER), List.of(userLinks));
         }});
         return new SendMessage(
             user.id(),
@@ -228,7 +267,7 @@ public class UserMessageProcessor {
         User user = update.message().from();
         return new SendMessage(
             user.id(),
-            "Неизвестная инструкция. " + USE_HELP_COMMAND_TEXT
+            UNKNOWN_COMMAND_MESSAGE
         );
     }
 
@@ -236,7 +275,7 @@ public class UserMessageProcessor {
         User user = update.message().from();
         return new SendMessage(
             user.id(),
-            "Для того, чтобы использовать бота, Вам необходимо зарегистрироваться с помощью команды /start."
+            MUST_USE_START_COMMAND_MESSAGE
         );
     }
 
