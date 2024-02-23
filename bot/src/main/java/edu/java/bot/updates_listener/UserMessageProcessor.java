@@ -100,7 +100,7 @@ public class UserMessageProcessor {
 
     private SendMessage processStartCommand(@NonNull Update update) {
         User user = update.message().from();
-        userRepository.createUser(user.id());
+        userRepository.createUserIfDoesNotExists(user.id());
         if (userRepository.getUserState(user.id()).equals(State.DEFAULT)) {
             return new SendMessage(user.id(), ALREADY_REGISTERED_MESSAGE);
         }

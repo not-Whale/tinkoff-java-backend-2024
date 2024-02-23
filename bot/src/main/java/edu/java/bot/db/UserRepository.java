@@ -2,11 +2,14 @@ package edu.java.bot.db;
 
 import edu.java.bot.db.user.State;
 import edu.java.bot.db.user.User;
-import lombok.NonNull;
+import edu.java.bot.exceptions.NoSuchUserException;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NonNull;
 
 public class UserRepository {
+    private static final String NO_SUCH_USER_MESSAGE = "Такого пользователя нет.";
+
     private final Map<Long, User> users;
 
     public UserRepository() {
@@ -17,44 +20,44 @@ public class UserRepository {
         return users.containsKey(userId);
     }
 
-    public boolean createUser(long userId) {
+    public void createUserIfDoesNotExists(long userId) {
         if (!hasUser(userId)) {
             users.put(userId, new User(userId));
-            return true;
         }
-        return false;
     }
 
-    public boolean setUserState(long userId, @NonNull State state) {
-        if (hasUser(userId)) {
-            users.get(userId).setState(state);
-            return true;
+    public void setUserState(long userId, @NonNull State state) {
+        if (!hasUser(userId)) {
+            throw new NoSuchUserException(NO_SUCH_USER_MESSAGE);
         }
-        return false;
+        users.get(userId).setState(state);
     }
 
     public State getUserState(long userId) {
-        return hasUser(userId) ? users.get(userId).getState() : null;
+        if (!hasUser(userId)) {
+            throw new NoSuchUserException(NO_SUCH_USER_MESSAGE);
+        }
+        return users.get(userId).getState();
     }
 
     public boolean trackLinkForUser(long userId, @NonNull String link) {
-        if (hasUser(userId)) {
-            return users.get(userId).track(link);
+        if (!hasUser(userId)) {
+            throw new NoSuchUserException(NO_SUCH_USER_MESSAGE);
         }
-        return false;
+        return users.get(userId).track(link);
     }
 
     public boolean untrackLinkForUser(long userId, @NonNull String link) {
-        if (hasUser(userId)) {
-            return users.get(userId).untrack(link);
+        if (!hasUser(userId)) {
+            throw new NoSuchUserException(NO_SUCH_USER_MESSAGE);
         }
-        return false;
+        return users.get(userId).untrack(link);
     }
 
     public String[] getUserLinks(long userId) {
-        if (hasUser(userId)) {
-            return users.get(userId).getLinks();
+        if (!hasUser(userId)) {
+            throw new NoSuchUserException(NO_SUCH_USER_MESSAGE);
         }
-        return new String[] {};
+        return users.get(userId).getLinks();
     }
 }
