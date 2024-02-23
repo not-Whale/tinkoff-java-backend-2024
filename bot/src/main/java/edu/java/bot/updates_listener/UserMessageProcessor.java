@@ -5,10 +5,16 @@ import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.Command;
+import edu.java.bot.commands.CommandWithArguments;
 import edu.java.bot.db.UserRepository;
 import edu.java.bot.db.user.State;
+import edu.java.bot.link_parser.GithubParser;
+import edu.java.bot.link_parser.StackoverflowParser;
 import edu.java.bot.markdown_processor.MarkdownProcessor;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 
@@ -16,6 +22,12 @@ public class UserMessageProcessor {
     private static final String NEW_LINE = "\n";
 
     private static final String DOUBLE_NEW_LINE = "\n\n";
+
+    private static final String USE_HELP_COMMAND_TEXT =
+        "Для получения инструкции по использованию бота используйте команду /help.";
+
+    private static final String UNVALIDATED_LINKS_TEXT =
+        "Ресурсы, ссылки на которые не были распознаны:";
 
     private final UserRepository userRepository;
 
@@ -40,8 +52,8 @@ public class UserMessageProcessor {
         return switch (userCommand.get().type()) {
             case START -> processStartCommand(update);
             case HELP -> processHelpCommand(update);
-            case TRACK -> processTrackCommand(update);
-            case UNTRACK -> processUntrackCommand(update);
+            case TRACK -> processTrackCommand(update, ((CommandWithArguments) userCommand.get()).arguments(update));
+            case UNTRACK -> processUntrackCommand(update, ((CommandWithArguments) userCommand.get()).arguments(update));
             case LIST -> processListCommand(update);
         };
     }
@@ -50,10 +62,10 @@ public class UserMessageProcessor {
         User user = update.message().from();
         userRepository.createUser(user.id());
         if (userRepository.getUserState(user.id()).equals(State.DEFAULT)) {
-            return new SendMessage(user.id(), "Вы уже зарегистрированы.");
+            return new SendMessage(user.id(), "Вы уже зарегистрированы. " + USE_HELP_COMMAND_TEXT);
         }
         userRepository.setUserState(user.id(), State.DEFAULT);
-        return new SendMessage(user.id(), "Вы успешно зарегистрированы.");
+        return new SendMessage(user.id(), "Вы успешно зарегистрированы. " + USE_HELP_COMMAND_TEXT);
     }
 
     private SendMessage processHelpCommand(Update update) {
@@ -76,29 +88,119 @@ public class UserMessageProcessor {
         ).parseMode(ParseMode.Markdown);
     }
 
-    private SendMessage processTrackCommand(Update update) {
+    private SendMessage processTrackCommand(Update update, String[] arguments) {
         User user = update.message().from();
         if (userSessionIsNotStarted(update)) {
             return mustStartMessage(update);
         }
-        // TODO: сделать процессор аргументов
-        // TODO: сделать парсер ссылок
+        if (arguments.length == 0) {
+            return new SendMessage(
+                user.id(),
+                "Не было передано ссылок для отслеживания. " + USE_HELP_COMMAND_TEXT
+            );
+        }
+        List<String> validatedLinks = getValidatedLinks(arguments);
+        List<String> trackedLinks = new ArrayList<>();
+        List<String> alreadyTrackedLinks = new ArrayList<>();
+        for (String link : validatedLinks) {
+            if (userRepository.trackLinkForUser(user.id(), link)) {
+                trackedLinks.add(link);
+            } else {
+                alreadyTrackedLinks.add(link);
+            }
+        }
+        List<String> unvalidatedLinks = getUnvalidatedLinks(arguments);
+        String response = getLinksGroupMessageText(new HashMap<>() {{
+            put(MarkdownProcessor.bold("Ресурсы, которые были добавлены в список отслеживаемых:"), trackedLinks);
+            put(MarkdownProcessor.bold("Ресурсы, которые уже находятся в списке отслеживаемых:"), alreadyTrackedLinks);
+            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_TEXT), unvalidatedLinks);
+        }});
         return new SendMessage(
             user.id(),
-            "Команда /track отработала."
-        );
+            response
+        ).parseMode(ParseMode.Markdown);
     }
 
-    private SendMessage processUntrackCommand(Update update) {
+    private SendMessage processUntrackCommand(Update update, String[] arguments) {
         User user = update.message().from();
         if (userSessionIsNotStarted(update)) {
             return mustStartMessage(update);
         }
-        // TODO: сделать процессор аргументов
+        if (arguments.length == 0) {
+            return new SendMessage(
+                user.id(),
+                "Не было передано ссылок для удаления. " + USE_HELP_COMMAND_TEXT
+            );
+        }
+        List<String> validatedLinks = getValidatedLinks(arguments);
+        List<String> untrackedLinks = new ArrayList<>();
+        List<String> alreadyUntrackedLinks = new ArrayList<>();
+        for (String link : validatedLinks) {
+            if (userRepository.untrackLinkForUser(user.id(), link)) {
+                untrackedLinks.add(link);
+            } else {
+                alreadyUntrackedLinks.add(link);
+            }
+        }
+        List<String> unvalidatedLinks = getUnvalidatedLinks(arguments);
+        String response = getLinksGroupMessageText(new HashMap<>() {{
+            put(MarkdownProcessor.bold("Ресурсы, которые были удалены из списка отслеживаемых:"), untrackedLinks);
+            put(MarkdownProcessor.bold("Ресурсы, которых нет в списке отслеживаемых:"), alreadyUntrackedLinks);
+            put(MarkdownProcessor.bold(UNVALIDATED_LINKS_TEXT), unvalidatedLinks);
+        }});
         return new SendMessage(
             user.id(),
-            "Команда /untrack отработала."
-        );
+            response
+        ).parseMode(ParseMode.Markdown);
+    }
+
+    private List<String> getUnvalidatedLinks(String[] links) {
+        List<String> unvalidatedLinks = new ArrayList<>();
+        for (String link : links) {
+            GithubParser githubParser = new GithubParser(link);
+            StackoverflowParser stackoverflowParser = new StackoverflowParser(link);
+            if (!githubParser.validate() && !stackoverflowParser.validate()) {
+                unvalidatedLinks.add(link);
+            }
+        }
+        return unvalidatedLinks;
+    }
+
+    private List<String> getValidatedLinks(String[] links) {
+        List<String> validatedLinks = new ArrayList<>();
+        for (String link : links) {
+            GithubParser githubParser = new GithubParser(link);
+            StackoverflowParser stackoverflowParser = new StackoverflowParser(link);
+            if (githubParser.validate() || stackoverflowParser.validate()) {
+                validatedLinks.add(link);
+            }
+        }
+        return validatedLinks;
+    }
+
+    private String getLinksGroupMessageText(Map<String, List<String>> groups) {
+        StringBuilder messageText = new StringBuilder();
+        for (var entry : groups.entrySet()) {
+            messageText.append(getLinksListMessageTextIfPresent(entry.getKey(), entry.getValue()));
+        }
+        return messageText.toString();
+    }
+
+    private String getLinksListMessageTextIfPresent(String headerText, List<String> links) {
+        StringBuilder linksList = new StringBuilder();
+        if (!links.isEmpty()) {
+            linksList
+                .append(headerText)
+                .append(NEW_LINE);
+            for (String link : links) {
+                linksList
+                    .append("- ")
+                    .append(link)
+                    .append(NEW_LINE);
+            }
+            linksList.append(NEW_LINE);
+        }
+        return linksList.toString();
     }
 
     private SendMessage processListCommand(Update update) {
@@ -113,18 +215,12 @@ public class UserMessageProcessor {
                 "Список отслеживаемых ресурсов пуст."
             );
         }
-        StringBuilder userLinksMessageText = new StringBuilder(
-            MarkdownProcessor.bold("Список отслеживаемых ресурсов:")
-        ).append(NEW_LINE);
-        for (String link : userLinks) {
-            userLinksMessageText
-                .append("- ")
-                .append(link)
-                .append(NEW_LINE);
-        }
+        String response = getLinksGroupMessageText(new HashMap<>() {{
+            put(MarkdownProcessor.bold("Список отслеживаемых ресурсов:"), List.of(userLinks));
+        }});
         return new SendMessage(
             user.id(),
-            userLinksMessageText.toString()
+            response
         ).parseMode(ParseMode.Markdown);
     }
 
@@ -132,7 +228,7 @@ public class UserMessageProcessor {
         User user = update.message().from();
         return new SendMessage(
             user.id(),
-            "Неизвестная инструкция. Для получения инструкции по использованию бота используйте команду /help."
+            "Неизвестная инструкция. " + USE_HELP_COMMAND_TEXT
         );
     }
 
