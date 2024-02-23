@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class UserMessageProcessor {
     private static final String NEW_LINE = "\n";
@@ -78,7 +79,7 @@ public class UserMessageProcessor {
         this.commands = commands;
     }
 
-    public SendMessage process(Update update) {
+    public SendMessage process(@NonNull Update update) {
         if (update.message() == null) {
             return null;
         }
@@ -97,7 +98,7 @@ public class UserMessageProcessor {
         };
     }
 
-    private SendMessage processStartCommand(Update update) {
+    private SendMessage processStartCommand(@NonNull Update update) {
         User user = update.message().from();
         userRepository.createUser(user.id());
         if (userRepository.getUserState(user.id()).equals(State.DEFAULT)) {
@@ -107,7 +108,7 @@ public class UserMessageProcessor {
         return new SendMessage(user.id(), REGISTRATION_MESSAGE);
     }
 
-    private SendMessage processHelpCommand(Update update) {
+    private SendMessage processHelpCommand(@NonNull Update update) {
         User user = update.message().from();
         StringBuilder botCommandsMessageText = new StringBuilder(
             MarkdownProcessor.bold(AVAILABLE_COMMANDS_MESSAGE)
@@ -127,7 +128,7 @@ public class UserMessageProcessor {
         ).parseMode(ParseMode.Markdown);
     }
 
-    private SendMessage processTrackCommand(Update update, String[] arguments) {
+    private SendMessage processTrackCommand(@NonNull Update update, @NonNull String[] arguments) {
         User user = update.message().from();
         if (userSessionIsNotStarted(update)) {
             return mustStartMessage(update);
@@ -160,7 +161,7 @@ public class UserMessageProcessor {
         ).parseMode(ParseMode.Markdown);
     }
 
-    private SendMessage processUntrackCommand(Update update, String[] arguments) {
+    private SendMessage processUntrackCommand(@NonNull Update update, @NonNull String[] arguments) {
         User user = update.message().from();
         if (userSessionIsNotStarted(update)) {
             return mustStartMessage(update);
@@ -193,7 +194,7 @@ public class UserMessageProcessor {
         ).parseMode(ParseMode.Markdown);
     }
 
-    private List<String> getUnvalidatedLinks(String[] links) {
+    private List<String> getUnvalidatedLinks(@NonNull String[] links) {
         List<String> unvalidatedLinks = new ArrayList<>();
         for (String link : links) {
             GithubParser githubParser = new GithubParser(link);
@@ -205,7 +206,7 @@ public class UserMessageProcessor {
         return unvalidatedLinks;
     }
 
-    private List<String> getValidatedLinks(String[] links) {
+    private List<String> getValidatedLinks(@NonNull String[] links) {
         List<String> validatedLinks = new ArrayList<>();
         for (String link : links) {
             GithubParser githubParser = new GithubParser(link);
@@ -217,7 +218,7 @@ public class UserMessageProcessor {
         return validatedLinks;
     }
 
-    private String getLinksGroupMessageText(Map<String, List<String>> groups) {
+    private String getLinksGroupMessageText(@NonNull Map<String, List<String>> groups) {
         StringBuilder messageText = new StringBuilder();
         for (var entry : groups.entrySet()) {
             messageText.append(getLinksListMessageTextIfPresent(entry.getKey(), entry.getValue()));
@@ -225,7 +226,7 @@ public class UserMessageProcessor {
         return messageText.toString();
     }
 
-    private String getLinksListMessageTextIfPresent(String headerText, List<String> links) {
+    private String getLinksListMessageTextIfPresent(@NonNull String headerText, @NonNull List<String> links) {
         StringBuilder linksList = new StringBuilder();
         if (!links.isEmpty()) {
             linksList
@@ -242,7 +243,7 @@ public class UserMessageProcessor {
         return linksList.toString();
     }
 
-    private SendMessage processListCommand(Update update) {
+    private SendMessage processListCommand(@NonNull Update update) {
         User user = update.message().from();
         if (userSessionIsNotStarted(update)) {
             return mustStartMessage(update);
@@ -263,7 +264,7 @@ public class UserMessageProcessor {
         ).parseMode(ParseMode.Markdown);
     }
 
-    private SendMessage unknownCommand(Update update) {
+    private SendMessage unknownCommand(@NonNull Update update) {
         User user = update.message().from();
         return new SendMessage(
             user.id(),
@@ -271,7 +272,7 @@ public class UserMessageProcessor {
         );
     }
 
-    private SendMessage mustStartMessage(Update update) {
+    private SendMessage mustStartMessage(@NonNull Update update) {
         User user = update.message().from();
         return new SendMessage(
             user.id(),
@@ -279,7 +280,7 @@ public class UserMessageProcessor {
         );
     }
 
-    private boolean userSessionIsNotStarted(Update update) {
+    private boolean userSessionIsNotStarted(@NonNull Update update) {
         User user = update.message().from();
         return (!userRepository.hasUser(user.id()) || userRepository.getUserState(user.id()).equals(State.NEW_USER));
     }

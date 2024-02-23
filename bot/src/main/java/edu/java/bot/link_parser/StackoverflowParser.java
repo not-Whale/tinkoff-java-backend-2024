@@ -2,7 +2,9 @@ package edu.java.bot.link_parser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import edu.java.bot.exceptions.IncorrectLinkFormatException;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class StackoverflowParser implements LinkParser {
     private static final String STACKOVERFLOW_LINK_FORMAT = "(https?://)?stackoverflow.com/";
@@ -34,7 +36,7 @@ public class StackoverflowParser implements LinkParser {
 
     private boolean isSearch = false;
 
-    public StackoverflowParser(String link) {
+    public StackoverflowParser(@NonNull String link) {
         this.link = link;
     }
 
@@ -46,7 +48,12 @@ public class StackoverflowParser implements LinkParser {
     @Override
     public void parse() {
         if (!validate()) {
-            throw new RuntimeException();
+            throw new IncorrectLinkFormatException("Ссылка не соответствует ни одному из шаблонов: \""
+                + QUESTION_LINK_FORMAT
+                + "\", \""
+                + SEARCH_LINK_FORMAT
+                + "\"."
+            );
         }
         Matcher questionLinkMatcher = Pattern.compile(QUESTION_LINK_FORMAT).matcher(link);
         if (questionLinkMatcher.matches()) {

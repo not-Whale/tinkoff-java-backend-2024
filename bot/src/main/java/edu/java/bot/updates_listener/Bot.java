@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.commands.Command;
 import edu.java.bot.configuration.ApplicationConfig;
 import java.util.List;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -56,7 +57,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
     }
 
     @Override
-    public int process(List<Update> updates) {
+    public int process(@NonNull List<Update> updates) {
         for (Update update : updates) {
             if (update.message() != null) {
                 telegramBot.execute(
@@ -67,7 +68,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    public <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(BaseRequest<T, R> request) {
+    public <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NonNull BaseRequest<T, R> request) {
         return telegramBot.execute(request);
     }
 

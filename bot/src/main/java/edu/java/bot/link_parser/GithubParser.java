@@ -2,7 +2,9 @@ package edu.java.bot.link_parser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import edu.java.bot.exceptions.IncorrectLinkFormatException;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class GithubParser implements LinkParser {
     private static final String GITHUB_LINK_FORMAT = "(https?://)?github.com/([a-zA-Z\\-]{3,})/([a-zA-Z0-9\\-]{3,})/?";
@@ -19,7 +21,7 @@ public class GithubParser implements LinkParser {
     @Getter
     private String repository;
 
-    public GithubParser(String link) {
+    public GithubParser(@NonNull String link) {
         this.link = link;
     }
 
@@ -32,7 +34,10 @@ public class GithubParser implements LinkParser {
     public void parse() {
         Matcher linkMatcher = Pattern.compile(GITHUB_LINK_FORMAT).matcher(link);
         if (!linkMatcher.matches()) {
-            throw new RuntimeException();
+            throw new IncorrectLinkFormatException("Ссылка не соответствует шаблону \""
+                + GITHUB_LINK_FORMAT
+                + "\"."
+            );
         }
         this.user = linkMatcher.group(USER_GROUP);
         this.repository = linkMatcher.group(REPOSITORY_GROUP);

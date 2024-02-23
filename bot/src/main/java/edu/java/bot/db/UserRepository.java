@@ -2,6 +2,7 @@ package edu.java.bot.db;
 
 import edu.java.bot.db.user.State;
 import edu.java.bot.db.user.User;
+import lombok.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class UserRepository {
         return false;
     }
 
-    public boolean setUserState(long userId, State state) {
+    public boolean setUserState(long userId, @NonNull State state) {
         if (hasUser(userId)) {
             users.get(userId).setState(state);
             return true;
@@ -36,14 +37,14 @@ public class UserRepository {
         return hasUser(userId) ? users.get(userId).getState() : null;
     }
 
-    public boolean trackLinkForUser(long userId, String link) {
+    public boolean trackLinkForUser(long userId, @NonNull String link) {
         if (hasUser(userId)) {
             return users.get(userId).track(link);
         }
         return false;
     }
 
-    public boolean untrackLinkForUser(long userId, String link) {
+    public boolean untrackLinkForUser(long userId, @NonNull String link) {
         if (hasUser(userId)) {
             return users.get(userId).untrack(link);
         }
