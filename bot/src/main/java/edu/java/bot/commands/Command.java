@@ -15,7 +15,7 @@ public interface Command {
         return MarkdownProcessor.codeBlock(command());
     }
 
-    default boolean isUpdateContainsCommand(Update update) {
+    default boolean supports(Update update) {
         return update.message().text().equals(command());
     }
 

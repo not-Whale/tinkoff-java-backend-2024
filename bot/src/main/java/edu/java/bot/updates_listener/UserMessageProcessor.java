@@ -44,7 +44,7 @@ public class UserMessageProcessor {
             return null;
         }
         Optional<Command> userCommand = commands.stream()
-            .filter(commands1 -> commands1.isUpdateContainsCommand(update))
+            .filter(commands1 -> commands1.supports(update))
             .findFirst();
         if (userCommand.isEmpty()) {
             return unknownCommand(update);
