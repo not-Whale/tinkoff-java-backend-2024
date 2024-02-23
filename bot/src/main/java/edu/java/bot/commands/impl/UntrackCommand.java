@@ -2,7 +2,6 @@ package edu.java.bot.commands.impl;
 
 import edu.java.bot.commands.CommandType;
 import edu.java.bot.commands.CommandWithArguments;
-import edu.java.bot.markdown_processor.MarkdownProcessor;
 
 // TODO: разобраться с константными полями
 // TODO: сделать бином
@@ -19,11 +18,6 @@ public class UntrackCommand implements CommandWithArguments {
     @Override
     public String description() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public String usage() {
-        return MarkdownProcessor.codeBlock(command() + " <link1 link2...>");
     }
 
     @Override
