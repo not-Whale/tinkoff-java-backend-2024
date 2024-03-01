@@ -8,16 +8,18 @@ import lombok.NonNull;
 import lombok.Setter;
 import static edu.java.bot.repositories.user_repository.user.State.NOT_REGISTERED;
 
-@Getter
 public class User {
     private final long userId;
 
-    @Setter private State state;
+    @Setter
+    @Getter
+    private State state;
 
+    @Getter
     private final Set<String> trackList;
 
     public User(long userId) {
-        this(userId, NOT_REGISTERED, new String[] {});
+        this(userId, NOT_REGISTERED);
     }
 
     public User(long userId, @NonNull State state) {
@@ -39,7 +41,7 @@ public class User {
         return this.trackList.remove(link);
     }
 
-    public String[] getLinks() {
-        return this.trackList.toArray(String[]::new);
+    public List<String> getLinks() {
+        return this.trackList.stream().toList();
     }
 }
