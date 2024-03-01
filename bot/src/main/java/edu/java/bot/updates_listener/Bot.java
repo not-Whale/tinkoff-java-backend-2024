@@ -18,7 +18,17 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class Bot implements AutoCloseable, UpdatesListener {
-    private static final String LANGUAGE_CODE = "ru";
+    private static final String BOT_DESCRIPTION = """
+          UpdatesNotificatorBot - это бот для удобного отслеживания изменений сервисов в одном месте. \
+          На данный момент доступно отслеживание вопросов на StackOverflow и репозиториев Github.
+
+          Подробнее о проекте:
+          https://github.com/not-Whale/tinkoff-java-backend-2024/
+
+          Cвяжитесь со мной @rezepinn, если Вы нашли ошибку или у Вас есть предложения по улучшению бота.""";
+
+    private static final String BOT_SHORT_DESCRIPTION =
+        "Бот для отслеживания изменений вопросов на StackOverflow и репозиториев Github.";
 
     private final ApplicationConfig applicationConfig;
 
@@ -26,7 +36,8 @@ public class Bot implements AutoCloseable, UpdatesListener {
 
     private TelegramBot telegramBot;
 
-    public Bot(ApplicationConfig applicationConfig, UserMessageProcessor userMessageProcessor) {
+    public Bot(@NonNull ApplicationConfig applicationConfig,
+        @NonNull UserMessageProcessor userMessageProcessor) {
         this.applicationConfig = applicationConfig;
         this.userMessageProcessor = userMessageProcessor;
         setupTelegramBot();
@@ -34,7 +45,10 @@ public class Bot implements AutoCloseable, UpdatesListener {
 
     private void setupTelegramBot() {
         this.telegramBot = new TelegramBot(applicationConfig.telegramToken());
-        telegramBot.setUpdatesListener(this, e -> log.error(e.getStackTrace()));
+        telegramBot.setUpdatesListener(
+            this,
+            e -> log.error(e.getStackTrace())
+        );
         setupTelegramBotCommands();
         setupTelegramBotDescriptions();
     }
@@ -48,12 +62,12 @@ public class Bot implements AutoCloseable, UpdatesListener {
 
     private void setupTelegramBotDescriptions() {
         telegramBot.execute(new SetMyDescription()
-            .description(BotDescriptions.getBotDescription())
-            .languageCode(LANGUAGE_CODE)
+            .description(BOT_DESCRIPTION)
+            .languageCode(applicationConfig.languageCode())
         );
         telegramBot.execute(new SetMyShortDescription()
-            .description(BotDescriptions.getBotShortDescription())
-            .languageCode(LANGUAGE_CODE)
+            .description(BOT_SHORT_DESCRIPTION)
+            .languageCode(applicationConfig.languageCode())
         );
     }
 
@@ -74,7 +88,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         telegramBot.shutdown();
     }
 }
