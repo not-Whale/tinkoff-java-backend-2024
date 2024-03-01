@@ -1,8 +1,9 @@
-package edu.java.bot.link_parsers;
+package edu.java.bot.link_processor.link_parsers.impl;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import edu.java.bot.exceptions.IncorrectLinkFormatException;
+import edu.java.bot.link_processor.link_parsers.LinkParser;
 import lombok.Getter;
 import lombok.NonNull;
 
