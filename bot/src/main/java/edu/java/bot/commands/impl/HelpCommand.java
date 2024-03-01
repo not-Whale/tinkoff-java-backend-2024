@@ -9,7 +9,9 @@ import edu.java.bot.response_creator.ResponseMessageCreator;
 import java.util.List;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HelpCommand implements Command {
     private static final String COMMAND =
         "/help";

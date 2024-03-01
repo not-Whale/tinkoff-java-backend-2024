@@ -15,8 +15,10 @@ import edu.java.bot.user_message_processors.UserMessageProcessor;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 @Log4j2
+@Component
 public class Bot implements AutoCloseable, UpdatesListener {
     private static final String BOT_DESCRIPTION = """
           UpdatesNotificatorBot - это бот для удобного отслеживания изменений сервисов в одном месте. \
