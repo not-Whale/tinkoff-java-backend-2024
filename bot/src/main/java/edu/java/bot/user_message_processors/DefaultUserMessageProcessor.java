@@ -1,25 +1,23 @@
-package edu.java.bot.updates_listener;
+package edu.java.bot.user_message_processors;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.Command;
-import edu.java.bot.commands.CommandWithArguments;
-import edu.java.bot.db.UserRepository;
-import edu.java.bot.db.user.State;
-import edu.java.bot.link_parser.GithubParser;
-import edu.java.bot.link_parser.StackoverflowParser;
-import edu.java.bot.markdown_processor.MarkdownProcessor;
+import edu.java.bot.exceptions.NullMessageException;
+import edu.java.bot.link_parsers.GithubParser;
+import edu.java.bot.link_parsers.StackoverflowParser;
+import edu.java.bot.repositories.user_repository.user.State;
+import edu.java.bot.response_processors.markup_processors.MarkdownProcessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.Getter;
 import lombok.NonNull;
 
-public class UserMessageProcessor {
+public class DefaultUserMessageProcessor implements UserMessageProcessor {
     private static final String NEW_LINE = "\n";
 
     private static final String DOUBLE_NEW_LINE = "\n\n";
@@ -69,42 +67,36 @@ public class UserMessageProcessor {
     private static final String UNVALIDATED_LINKS_HEADER =
         "Ресурсы, ссылки на которые не были распознаны:";
 
-    private final UserRepository userRepository;
-
-    @Getter
     private final List<Command> commands;
 
-    public UserMessageProcessor(UserRepository userRepository, List<Command> commands) {
-        this.userRepository = userRepository;
+    public DefaultUserMessageProcessor(List<Command> commands) {
         this.commands = commands;
     }
 
+    @Override
+    public List<Command> commands() {
+        return commands;
+    }
+
+    @Override
     public SendMessage process(@NonNull Update update) {
         if (update.message() == null) {
-            return null;
+            throw new NullMessageException("Сообщение не должно быть null.");
         }
-        Optional<Command> userCommand = commands.stream()
-            .filter(commands1 -> commands1.supports(update))
+        Optional<SendMessage> response = commands.stream()
+            .filter(command -> command.supports(update))
+            .map(command -> command.process(update))
             .findFirst();
-        if (userCommand.isEmpty()) {
-            return unknownCommand(update);
-        }
-        return switch (userCommand.get().type()) {
-            case START -> processStartCommand(update);
-            case HELP -> processHelpCommand(update);
-            case TRACK -> processTrackCommand(update, ((CommandWithArguments) userCommand.get()).arguments(update));
-            case UNTRACK -> processUntrackCommand(update, ((CommandWithArguments) userCommand.get()).arguments(update));
-            case LIST -> processListCommand(update);
-        };
+        return response.orElse(unknownCommand(update));
     }
 
     private SendMessage processStartCommand(@NonNull Update update) {
         User user = update.message().from();
         userRepository.createUserIfDoesNotExists(user.id());
-        if (userRepository.getUserState(user.id()).equals(State.DEFAULT)) {
+        if (userRepository.getUserState(user.id()).equals(State.REGISTERED)) {
             return new SendMessage(user.id(), ALREADY_REGISTERED_MESSAGE);
         }
-        userRepository.setUserState(user.id(), State.DEFAULT);
+        userRepository.setUserState(user.id(), State.REGISTERED);
         return new SendMessage(user.id(), REGISTRATION_MESSAGE);
     }
 
@@ -282,6 +274,6 @@ public class UserMessageProcessor {
 
     private boolean userSessionIsNotStarted(@NonNull Update update) {
         User user = update.message().from();
-        return (!userRepository.hasUser(user.id()) || userRepository.getUserState(user.id()).equals(State.NEW_USER));
+        return (!userRepository.hasUser(user.id()) || userRepository.getUserState(user.id()).equals(State.NOT_REGISTERED));
     }
 }

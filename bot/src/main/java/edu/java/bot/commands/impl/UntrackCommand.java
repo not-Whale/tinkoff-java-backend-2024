@@ -1,14 +1,18 @@
 package edu.java.bot.commands.impl;
 
-import edu.java.bot.commands.CommandType;
 import edu.java.bot.commands.CommandWithArguments;
+import edu.java.bot.repositories.user_repository.UserRepository;
 
-// TODO: разобраться с константными полями
-// TODO: сделать бином
 public class UntrackCommand implements CommandWithArguments {
     private static final String COMMAND = "/untrack";
 
     private static final String DESCRIPTION = "Удалить ресурс из списка отслеживаемых.";
+
+    private final UserRepository userRepository;
+
+    public UntrackCommand(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public String command() {
@@ -18,10 +22,5 @@ public class UntrackCommand implements CommandWithArguments {
     @Override
     public String description() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public CommandType type() {
-        return CommandType.UNTRACK;
     }
 }

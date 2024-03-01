@@ -2,8 +2,9 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.exceptions.NullMessageException;
-import edu.java.bot.markdown_processor.MarkdownProcessor;
+import edu.java.bot.response_processors.markup_processors.MarkdownProcessor;
 import lombok.NonNull;
 
 public interface Command {
@@ -11,7 +12,9 @@ public interface Command {
 
     String description();
 
-    CommandType type();
+    SendMessage process(@NonNull Update update);
+
+    boolean isRegistrationRequired();
 
     default String usage() {
         return MarkdownProcessor.codeBlock(command());

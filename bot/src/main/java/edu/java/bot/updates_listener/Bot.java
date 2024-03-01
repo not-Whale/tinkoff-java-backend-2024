@@ -11,6 +11,7 @@ import com.pengrad.telegrambot.request.SetMyShortDescription;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.commands.Command;
 import edu.java.bot.configuration.ApplicationConfig;
+import edu.java.bot.user_message_processors.UserMessageProcessor;
 import java.util.List;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -39,7 +40,7 @@ public class Bot implements AutoCloseable, UpdatesListener {
     }
 
     private void setupTelegramBotCommands() {
-        BotCommand[] botCommands = userMessageProcessor.getCommands().stream()
+        BotCommand[] botCommands = userMessageProcessor.commands().stream()
             .map(Command::toApiCommand)
             .toArray(BotCommand[]::new);
         telegramBot.execute(new SetMyCommands(botCommands));

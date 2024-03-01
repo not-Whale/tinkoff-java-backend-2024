@@ -1,4 +1,4 @@
-package edu.java.bot.db.user;
+package edu.java.bot.repositories.user_repository.user;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import static edu.java.bot.db.user.State.NEW_USER;
+import static edu.java.bot.repositories.user_repository.user.State.NOT_REGISTERED;
 
 @Getter
 public class User {
@@ -17,7 +17,7 @@ public class User {
     private final Set<String> trackList;
 
     public User(long userId) {
-        this(userId, NEW_USER, new String[] {});
+        this(userId, NOT_REGISTERED, new String[] {});
     }
 
     public User(long userId, @NonNull State state) {

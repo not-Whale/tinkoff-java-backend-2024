@@ -1,14 +1,18 @@
 package edu.java.bot.commands.impl;
 
-import edu.java.bot.commands.CommandType;
 import edu.java.bot.commands.CommandWithArguments;
+import edu.java.bot.repositories.user_repository.UserRepository;
 
-// TODO: разобраться с константными полями
-// TODO: сделать бином
 public class TrackCommand implements CommandWithArguments {
     private static final String COMMAND = "/track";
 
     private static final String DESCRIPTION = "Добавить ресурс в список отслеживаемых.";
+
+    private final UserRepository userRepository;
+
+    public TrackCommand(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public String command() {
@@ -18,10 +22,5 @@ public class TrackCommand implements CommandWithArguments {
     @Override
     public String description() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public CommandType type() {
-        return CommandType.TRACK;
     }
 }

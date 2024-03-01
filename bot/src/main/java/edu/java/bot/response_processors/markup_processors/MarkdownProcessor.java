@@ -1,8 +1,8 @@
-package edu.java.bot.markdown_processor;
+package edu.java.bot.response_processors.markup_processors;
 
 import lombok.NonNull;
 
-public class MarkdownProcessor {
+public class MarkdownProcessor implements MarkupProcessor {
     private MarkdownProcessor() {}
 
     public static String bold(@NonNull String text) {

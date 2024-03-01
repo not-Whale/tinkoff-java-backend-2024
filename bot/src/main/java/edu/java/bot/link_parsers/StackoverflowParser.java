@@ -1,4 +1,4 @@
-package edu.java.bot.link_parser;
+package edu.java.bot.link_parsers;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

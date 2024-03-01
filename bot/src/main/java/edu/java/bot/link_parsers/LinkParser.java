@@ -1,4 +1,4 @@
-package edu.java.bot.link_parser;
+package edu.java.bot.link_parsers;
 
 public interface LinkParser {
     boolean validate();

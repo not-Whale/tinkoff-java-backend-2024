@@ -1,7 +1,7 @@
-package edu.java.bot.db;
+package edu.java.bot.repositories.user_repository;
 
-import edu.java.bot.db.user.State;
-import edu.java.bot.db.user.User;
+import edu.java.bot.repositories.user_repository.user.State;
+import edu.java.bot.repositories.user_repository.user.User;
 import edu.java.bot.exceptions.NoSuchUserException;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,14 +1,18 @@
 package edu.java.bot.commands.impl;
 
 import edu.java.bot.commands.Command;
-import edu.java.bot.commands.CommandType;
+import edu.java.bot.repositories.user_repository.UserRepository;
 
-// TODO: разобраться с константными полями
-// TODO: сделать бином
 public class ListCommand implements Command {
     private static final String COMMAND = "/list";
 
     private static final String DESCRIPTION = "Вывести список отслеживаемых ресурсов.";
+
+    private final UserRepository userRepository;
+
+    public ListCommand(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public String command() {
@@ -18,10 +22,5 @@ public class ListCommand implements Command {
     @Override
     public String description() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public CommandType type() {
-        return CommandType.LIST;
     }
 }
