@@ -1,7 +1,5 @@
-package edu.java.bot.link_processor.link_parsers;
+package edu.java.bot.link_processor.link_validators;
 
-public interface LinkParser {
-    boolean validate();
-
-    void parse();
+public interface LinkValidator {
+    boolean validate(String link);
 }
