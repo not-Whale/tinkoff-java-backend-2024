@@ -29,32 +29,32 @@ public class HtmlProcessor implements MarkupProcessor {
 
     @Override
     public String bold(String text) {
-        return BOLD_FORMAT.formatted(text);
+        return BOLD_FORMAT.formatted(escape(text));
     }
 
     @Override
     public String italic(String text) {
-        return ITALIC_FORMAT.formatted(text);
+        return ITALIC_FORMAT.formatted(escape(text));
     }
 
     @Override
     public String inlineUrl(String text, String url) {
-        return INLINE_URL_FORMAT.formatted(text, url);
+        return INLINE_URL_FORMAT.formatted(escape(text), escape(url));
     }
 
     @Override
     public String inlineUserMention(String text, int userId) {
-        return INLINE_USER_MENTION_FORMAT.formatted(text, userId);
+        return INLINE_USER_MENTION_FORMAT.formatted(escape(text), userId);
     }
 
     @Override
     public String inlineCodeBlock(String text) {
-        return INLINE_CODE_BLOCK_FORMAT.formatted(text);
+        return INLINE_CODE_BLOCK_FORMAT.formatted(escape(text));
     }
 
     @Override
     public String codeBlock(String text) {
-        return CODE_BLOCK_FORMAT.formatted(text);
+        return CODE_BLOCK_FORMAT.formatted(escape(text));
     }
 
     @Override

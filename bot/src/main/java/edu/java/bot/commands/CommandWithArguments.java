@@ -7,7 +7,7 @@ import lombok.NonNull;
 public interface CommandWithArguments extends Command {
     @Override
     default String usage() {
-        return command() + " link1 link2...";
+        return command() + " <link1 link2...>";
     }
 
     @Override
