@@ -1,7 +1,7 @@
 package edu.java.bot.link_processor.link_validators.impl;
 
 import edu.java.bot.link_processor.link_validators.LinkValidator;
-import lombok.NonNull;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +11,7 @@ public class GithubLinkValidator implements LinkValidator {
     public GithubLinkValidator() {}
 
     @Override
-    public boolean validate(@NonNull String link) {
-        return link.matches(GITHUB_LINK_FORMAT);
+    public List<String> patterns() {
+        return List.of(GITHUB_LINK_FORMAT);
     }
 }

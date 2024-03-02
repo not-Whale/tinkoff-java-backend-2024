@@ -1,7 +1,7 @@
 package edu.java.bot.link_processor.link_validators.impl;
 
 import edu.java.bot.link_processor.link_validators.LinkValidator;
-import lombok.NonNull;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +17,7 @@ public class StackoverflowLinkValidator implements LinkValidator {
     public StackoverflowLinkValidator() {}
 
     @Override
-    public boolean validate(@NonNull String link) {
-        return link.matches(QUESTION_LINK_FORMAT) || link.matches(SEARCH_LINK_FORMAT);
+    public List<String> patterns() {
+        return List.of(QUESTION_LINK_FORMAT, SEARCH_LINK_FORMAT);
     }
 }
