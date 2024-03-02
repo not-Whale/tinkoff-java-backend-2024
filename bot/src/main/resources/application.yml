@@ -1,5 +1,6 @@
 app:
   telegram-token: unset
+  language-code: ru
 
 spring:
   application:
