@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.Command;
-import edu.java.bot.commands.CommandUtils;
+import edu.java.bot.exceptions.NullMessageException;
 import edu.java.bot.response_creator.ResponseMessageCreator;
 import edu.java.bot.user_message_processors.UserMessageProcessor;
 import java.util.List;
@@ -31,7 +31,6 @@ public class DefaultUserMessageProcessor implements UserMessageProcessor {
 
     @Override
     public SendMessage process(@NonNull Update update) {
-        CommandUtils.messageMustBeNotNull(update);
         Optional<SendMessage> response = commands.stream()
             .filter(command -> command.supports(update))
             .map(command -> command.process(update))
@@ -40,6 +39,9 @@ public class DefaultUserMessageProcessor implements UserMessageProcessor {
     }
 
     private SendMessage unknownCommand(Update update) {
+        if (update.message() == null) {
+            throw new NullMessageException("Сообщение не должно быть null.");
+        }
         User user = update.message().from();
         return responseMessageCreator.getUnknownCommandMessage(user);
     }

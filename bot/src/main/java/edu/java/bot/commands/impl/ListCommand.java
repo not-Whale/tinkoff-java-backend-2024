@@ -4,7 +4,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.Command;
-import edu.java.bot.commands.CommandUtils;
 import edu.java.bot.repositories.user_repository.UserRepository;
 import edu.java.bot.response_creator.ResponseMessageCreator;
 import java.util.List;
@@ -43,7 +42,7 @@ public class ListCommand implements Command {
     public SendMessage process(@NonNull Update update) {
         messageMustBeNotNull(update);
         User user = update.message().from();
-        if (CommandUtils.isUserSessionNotStarted(update, userRepository)) {
+        if (isUserSessionNotStarted(update, userRepository)) {
             return responseMessageCreator.getMustStartMessage(user);
         }
         List<String> userLinks = userRepository.getUserLinks(user.id());

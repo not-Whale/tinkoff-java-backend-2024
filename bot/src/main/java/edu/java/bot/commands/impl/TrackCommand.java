@@ -62,10 +62,10 @@ public class TrackCommand implements CommandWithArguments {
     public SendMessage process(@NonNull Update update) {
         messageMustBeNotNull(update);
         User user = update.message().from();
-        if (CommandUtils.isUserSessionNotStarted(update, userRepository)) {
+        if (isUserSessionNotStarted(update, userRepository)) {
             return responseMessageCreator.getMustStartMessage(user);
         }
-        List<String> links = CommandUtils.getArguments(update);
+        List<String> links = getArguments(update);
         if (links.isEmpty()) {
             return responseMessageCreator.getNoLinksMessage(user, NO_TRACK_LINKS_MESSAGE);
         }
