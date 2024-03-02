@@ -15,11 +15,15 @@ public class MarkdownProcessor implements MarkupProcessor {
 
     private static final String CODE_BLOCK = "```";
 
+    private static final String INLINE_URL_FORMAT = "[%s](tg://user?id=%d)";
+
+    private static final String INLINE_USER_MENTION_FORMAT = "[%s](%s)";
+
     private static final String ESCAPE = "\\";
 
     private static final String NEW_LINE = "\n";
 
-    private static final String LEFT_BRACKET = "[";
+    private static final String LEFT_BRACKET = "(";
 
     private static final List<String> ESCAPE_LIST = List.of(
         BOLD, ITALIC, INLINE_CODE_BLOCK, LEFT_BRACKET
@@ -44,28 +48,12 @@ public class MarkdownProcessor implements MarkupProcessor {
 
     @Override
     public String inlineUrl(@NonNull String text, @NonNull String url) {
-        StringBuilder inlineUrl = new StringBuilder();
-        inlineUrl
-            .append("[")
-            .append(text)
-            .append("]")
-            .append("(")
-            .append(url)
-            .append(")");
-        return inlineUrl.toString();
+        return INLINE_URL_FORMAT.formatted(text, url);
     }
 
     @Override
     public String inlineUserMention(@NonNull String text, int userId) {
-        StringBuilder inlineUserMention = new StringBuilder();
-        inlineUserMention
-            .append("[")
-            .append(text)
-            .append("]")
-            .append("(tg://user?id=")
-            .append(userId)
-            .append(")");
-        return inlineUserMention.toString();
+        return INLINE_USER_MENTION_FORMAT.formatted(text, userId);
     }
 
     @Override
