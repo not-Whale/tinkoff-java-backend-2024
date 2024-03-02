@@ -114,7 +114,7 @@ public class ResponseMessageCreator {
     public SendMessage getNoLinksMessage(@NonNull User user, @NonNull String message) {
         return new SendMessage(
             user.id(),
-            markupProcessor.escape(message) + NEW_LINE + markupProcessor.escape(USE_HELP_COMMAND_MESSAGE)
+            markupProcessor.escape(message + NEW_LINE + USE_HELP_COMMAND_MESSAGE)
         ).parseMode(markupProcessor.parseMode());
     }
 
