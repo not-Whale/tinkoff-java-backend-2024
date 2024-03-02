@@ -3,6 +3,7 @@ package edu.java.bot.response_creator;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.commands.Command;
+import edu.java.bot.exceptions.EmptyTrackListException;
 import edu.java.bot.response_creator.markup_processors.MarkupProcessor;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,9 @@ public class ResponseMessageCreator {
     }
 
     public SendMessage getTrackListMessage(@NonNull User user, @NonNull List<String> links) {
+        if (links.isEmpty()) {
+            throw new EmptyTrackListException("Список отслеживаемых ссылок для отчета не должен быть пуст.");
+        }
         return new SendMessage(
             user.id(),
             getLinksListTextIfLinksPresent(TRACK_LIST_HEADER, links)
