@@ -8,7 +8,6 @@ import edu.java.bot.repositories.user_repository.UserRepository;
 import edu.java.bot.response_creator.ResponseMessageCreator;
 import java.util.List;
 import lombok.NonNull;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
