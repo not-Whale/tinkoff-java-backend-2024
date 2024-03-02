@@ -8,7 +8,7 @@ import edu.java.bot.repositories.user_repository.UserRepository;
 import edu.java.bot.response_creator.ResponseMessageCreator;
 import java.util.List;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,11 +21,14 @@ public class HelpCommand implements Command {
 
     private final ResponseMessageCreator responseMessageCreator;
 
-    private List<Command> commands;
+    private final List<Command> commands;
 
     public HelpCommand(@NonNull UserRepository userRepository,
-        @NonNull ResponseMessageCreator responseMessageCreator) {
+        @NonNull ResponseMessageCreator responseMessageCreator,
+        @NonNull List<Command> commands) {
         this.responseMessageCreator = responseMessageCreator;
+        this.commands = commands;
+        this.commands.add(this);
     }
 
     @Override
@@ -43,10 +46,5 @@ public class HelpCommand implements Command {
         messageMustBeNotNull(update);
         User user = update.message().from();
         return responseMessageCreator.getAvailableCommandsMessage(user, commands);
-    }
-
-    @Autowired
-    public void setCommands(List<Command> commands) {
-        this.commands = commands;
     }
 }
