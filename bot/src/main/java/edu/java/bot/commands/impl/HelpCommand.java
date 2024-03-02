@@ -42,7 +42,7 @@ public class HelpCommand implements Command {
 
     @Override
     public SendMessage process(@NonNull Update update) {
-        messageMustBeNotNull(update);
+        processedUpdateFilter(update);
         User user = update.message().from();
         return responseMessageCreator.getAvailableCommandsMessage(user, commands);
     }

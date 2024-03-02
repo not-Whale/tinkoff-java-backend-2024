@@ -40,7 +40,7 @@ public class ListCommand implements Command {
 
     @Override
     public SendMessage process(@NonNull Update update) {
-        messageMustBeNotNull(update);
+        processedUpdateFilter(update);
         User user = update.message().from();
         if (isUserSessionNotStarted(update, userRepository)) {
             return responseMessageCreator.getMustStartMessage(user);

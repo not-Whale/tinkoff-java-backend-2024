@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.exceptions.CommandDoesNotSupportsException;
 import edu.java.bot.exceptions.NullMessageException;
 import edu.java.bot.repositories.user_repository.UserRepository;
 import edu.java.bot.repositories.user_repository.user.State;
@@ -23,6 +24,19 @@ public interface Command {
     default boolean supports(@NonNull Update update) {
         messageMustBeNotNull(update);
         return update.message().text().equals(command());
+    }
+
+    default void processedUpdateFilter(@NonNull Update update) {
+        messageMustBeNotNull(update);
+        processedCommandMustSupports(update);
+    }
+
+    default void processedCommandMustSupports(@NonNull Update update) {
+        if (!supports(update)) {
+            throw new CommandDoesNotSupportsException(
+                "Команда, обработка которой запрошена не соответствует шаблону " + usage()
+            );
+        }
     }
 
     default void messageMustBeNotNull(@NonNull Update update) {

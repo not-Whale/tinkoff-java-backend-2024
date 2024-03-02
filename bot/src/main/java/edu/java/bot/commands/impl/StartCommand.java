@@ -40,7 +40,7 @@ public class StartCommand implements Command {
 
     @Override
     public SendMessage process(@NonNull Update update) {
-        messageMustBeNotNull(update);
+        processedUpdateFilter(update);
         User user = update.message().from();
         userRepository.createUserIfDoesNotExists(user.id());
         if (userRepository.getUserState(user.id()).equals(State.REGISTERED)) {
