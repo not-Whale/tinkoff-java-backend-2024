@@ -1,8 +1,8 @@
 package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Update;
-import lombok.NonNull;
 import java.util.List;
+import lombok.NonNull;
 
 public interface CommandWithArguments extends Command {
     @Override

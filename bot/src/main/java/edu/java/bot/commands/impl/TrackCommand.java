@@ -3,7 +3,6 @@ package edu.java.bot.commands.impl;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.commands.CommandUtils;
 import edu.java.bot.commands.CommandWithArguments;
 import edu.java.bot.link_processor.LinkProcessor;
 import edu.java.bot.repositories.user_repository.UserRepository;
